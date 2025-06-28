@@ -6,6 +6,6 @@ import com.example.tasks.src.features.auth.domain.models.RegisterAuth
 
 
 interface AuthRepository{
-    suspend fun access(request: LoginAuth) : AuthResponse
-    suspend fun register(request: RegisterAuth): AuthResponse
+    suspend fun access(request: LoginAuth) : Result<AuthResponse>
+    suspend fun register(request: RegisterAuth): Result<AuthResponse>
 }

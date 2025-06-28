@@ -22,7 +22,7 @@ class DeleteTaskViewModel(
 
         viewModelScope.launch {
             try {
-                deleteTaskUseCase(taskId)
+                deleteTaskUseCase(taskId).getOrThrow()
                 _deleteStatusMessage.value = "Task deleted successfully"
             } catch (e: Exception) {
                 _deleteStatusMessage.value = e.message ?: "Unknown error"

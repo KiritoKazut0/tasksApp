@@ -74,7 +74,7 @@ class UpdateTaskViewModel (
         viewModelScope.launch {
             try {
                 _isLoading.value = true
-                val result = updateTaskUseCase(idTask, taskUpdate)
+                val result = updateTaskUseCase(idTask, taskUpdate).getOrThrow()
                 _message.value = "Update task successful"
                 _success.value = true
                 _showSuccess.value = true

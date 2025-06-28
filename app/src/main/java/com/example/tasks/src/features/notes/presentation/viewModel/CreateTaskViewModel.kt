@@ -130,7 +130,7 @@ class CreateTaskViewModel(
         viewModelScope.launch {
             try {
                 _isLoading.value = true
-                val result = createTaskUseCase(task)
+                val result = createTaskUseCase(task).getOrThrow()
                 _message.value = "User ID is required"
                 _success.value = true
                 _showSuccess.value = true

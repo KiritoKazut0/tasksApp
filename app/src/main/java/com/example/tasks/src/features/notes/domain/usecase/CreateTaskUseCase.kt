@@ -6,7 +6,7 @@ import com.example.tasks.src.features.notes.domain.repository.TaskRepository
 
 class CreateTaskUseCase(private val repository: TaskRepository) {
 
-    suspend operator fun invoke(request: CreateTask): Task{
+    suspend operator fun invoke(request: CreateTask): Result<Task>{
         return repository.create(request)
     }
 

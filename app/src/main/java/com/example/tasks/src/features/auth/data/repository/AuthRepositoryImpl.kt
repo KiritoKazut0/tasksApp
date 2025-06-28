@@ -8,14 +8,23 @@ import com.example.tasks.src.features.auth.domain.repository.AuthRepository
 
 
 class AuthRepositoryImpl (private val api: AuthService ): AuthRepository{
-    override suspend fun access(request: LoginAuth): AuthResponse {
-        val response =  api.accessUser(request.toDo())
-        return response.toDomain()
+
+    override suspend fun access(request: LoginAuth): Result<AuthResponse> {
+        return try {
+            val response =  api.accessUser(request.toDo())
+            Result.success(response.toDomain())
+        } catch (e: Exception){
+            Result.failure(e)
+        }
     }
 
-    override suspend fun register(request: RegisterAuth): AuthResponse {
-       val  response =  api.registerUser(request.toDo())
-        return response.toDomain()
+    override suspend fun register(request: RegisterAuth): Result<AuthResponse>  {
+        return try {
+            val  response =  api.registerUser(request.toDo())
+            Result.success(response.toDomain())
+        } catch (e: Exception){
+            Result.failure(e)
+        }
     }
 
 

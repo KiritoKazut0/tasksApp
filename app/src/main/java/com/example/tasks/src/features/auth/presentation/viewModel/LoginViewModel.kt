@@ -105,7 +105,7 @@ class  LoginViewModel(
 
         viewModelScope.launch {
             try {
-                val result = accessUserUseCase(user)
+                val result = accessUserUseCase(user).getOrThrow()
                 _userId.value = result.data.id
                 _message.value = "Login successful"
                 _success.value = true

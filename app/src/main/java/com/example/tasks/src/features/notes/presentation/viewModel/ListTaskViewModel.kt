@@ -7,7 +7,7 @@ import com.example.tasks.src.features.notes.domain.usecase.ListTaskUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-
+import kotlin.getOrThrow
 
 
 class ListTaskViewModel(private val listTaskUseCase: ListTaskUseCase) : ViewModel() {
@@ -31,7 +31,7 @@ class ListTaskViewModel(private val listTaskUseCase: ListTaskUseCase) : ViewMode
         viewModelScope.launch {
             try {
                 _isLoading.value = true
-                val tasksResult = listTaskUseCase(userId)
+                val tasksResult = listTaskUseCase(userId).getOrThrow()
                 println("Tasks loaded for user $userId: $tasksResult")
                 _tasks.value = tasksResult
                 _errorMessage.value = null

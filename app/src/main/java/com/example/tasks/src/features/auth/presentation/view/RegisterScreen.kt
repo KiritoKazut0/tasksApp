@@ -32,10 +32,9 @@ import  com.example.tasks.R
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.tasks.src.features.auth.data.di.AppModule
+import com.example.tasks.src.features.auth.di.AppModule
 import com.example.tasks.src.features.auth.presentation.viewModel.RegisterViewModel
 import com.example.tasks.src.features.auth.presentation.viewModel.RegisterViewModelFactory
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 

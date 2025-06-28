@@ -1,11 +1,9 @@
-package com.example.tasks.src.features.notes.data.datasource
+package com.example.tasks.src.features.notes.data.datasource.remote
 
 import com.example.tasks.src.features.notes.data.models.CreateTaskDto
 import com.example.tasks.src.features.notes.data.models.DeleteTaskDto
-import com.example.tasks.src.features.notes.data.models.ListTaskDto
 import com.example.tasks.src.features.notes.data.models.TaskDto
 import com.example.tasks.src.features.notes.data.models.UpdateTaskDto
-import com.example.tasks.src.features.notes.domain.models.Task
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET

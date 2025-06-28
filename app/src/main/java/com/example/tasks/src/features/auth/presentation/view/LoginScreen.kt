@@ -31,7 +31,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import  com.example.tasks.R
-import com.example.tasks.src.features.auth.data.di.AppModule
+import com.example.tasks.src.features.auth.di.AppModule
 import com.example.tasks.src.features.auth.presentation.viewModel.LoginViewModel
 import com.example.tasks.src.features.auth.presentation.viewModel.LoginViewModelFactory
 import kotlinx.coroutines.launch

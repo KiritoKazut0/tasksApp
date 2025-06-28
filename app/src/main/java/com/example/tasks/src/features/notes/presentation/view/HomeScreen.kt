@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tasks.R
-import com.example.tasks.src.features.notes.data.di.AppModule
+import com.example.tasks.src.features.notes.di.AppModule
 import com.example.tasks.src.features.notes.domain.models.Task
 import com.example.tasks.src.features.notes.domain.models.TaskStatus
 import com.example.tasks.src.features.notes.presentation.viewModel.DeleteTaskViewModel

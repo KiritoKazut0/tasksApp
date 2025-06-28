@@ -132,7 +132,7 @@ class  RegisterViewModel(private val registerAuthUseCase: RegisterAuthUseCase): 
 
          viewModelScope.launch {
              try {
-                 val result = registerAuthUseCase(user)
+                 val result = registerAuthUseCase(user).getOrThrow()
                  _userId.value = result.data.id
                  _message.value = "Register successful"
                  _success.value = true

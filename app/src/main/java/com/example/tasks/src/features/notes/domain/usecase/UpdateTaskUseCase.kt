@@ -6,7 +6,7 @@ import com.example.tasks.src.features.notes.domain.repository.TaskRepository
 
 class UpdateTaskUseCase (private val repository: TaskRepository){
 
-    suspend operator fun invoke(id: String ,request: UpdateTask): Task{
+    suspend operator fun invoke(id: String ,request: UpdateTask): Result<Task>{
         return  repository.update(id, request)
     }
 
