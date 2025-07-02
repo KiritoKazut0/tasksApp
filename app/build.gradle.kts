@@ -51,8 +51,13 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.bundles.camerax)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.coil.compose)
     implementation(libs.com.squareup.okhttp3.logging.interceptor)
     implementation(libs.androidx.datastore.preferences)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

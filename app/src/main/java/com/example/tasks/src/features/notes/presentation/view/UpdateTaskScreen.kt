@@ -33,7 +33,7 @@ import com.example.tasks.R
 import com.example.tasks.src.features.notes.di.AppModule
 import com.example.tasks.src.features.notes.domain.models.TaskStatus
 import com.example.tasks.src.features.notes.presentation.viewModel.UpdateTaskViewModel
-import com.example.tasks.src.features.notes.presentation.viewModel.UpdateTaskViewModelFactory
+import com.example.tasks.src.features.notes.presentation.viewModel.factory.UpdateTaskViewModelFactory
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)

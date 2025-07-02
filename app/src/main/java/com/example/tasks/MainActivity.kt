@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.example.tasks.src.core.appcontext.AppContextHolder
 import com.example.tasks.src.core.navegation.NavigationWrapper
 import com.example.tasks.src.features.auth.di.AppModule
 
@@ -13,6 +14,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         Log.d("MainActivity", "Todo Ok")
         AppModule.init(applicationContext)
+        AppContextHolder.init(this)
         enableEdgeToEdge()
         setContent {
            NavigationWrapper()

@@ -29,9 +29,9 @@ import com.example.tasks.src.features.notes.di.AppModule
 import com.example.tasks.src.features.notes.domain.models.Task
 import com.example.tasks.src.features.notes.domain.models.TaskStatus
 import com.example.tasks.src.features.notes.presentation.viewModel.DeleteTaskViewModel
-import com.example.tasks.src.features.notes.presentation.viewModel.DeleteTaskViewModelFactory
+import com.example.tasks.src.features.notes.presentation.viewModel.factory.DeleteTaskViewModelFactory
 import com.example.tasks.src.features.notes.presentation.viewModel.ListTaskViewModel
-import com.example.tasks.src.features.notes.presentation.viewModel.ListTaskViewModelFactory
+import com.example.tasks.src.features.notes.presentation.viewModel.factory.ListTaskViewModelFactory
 
 
 

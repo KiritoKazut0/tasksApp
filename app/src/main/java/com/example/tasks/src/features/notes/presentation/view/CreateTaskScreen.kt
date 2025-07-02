@@ -1,5 +1,6 @@
 package com.example.tasks.src.features.notes.presentation.view
 
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -33,7 +34,7 @@ import com.example.tasks.R
 import com.example.tasks.src.features.notes.di.AppModule
 import com.example.tasks.src.features.notes.domain.models.TaskStatus
 import com.example.tasks.src.features.notes.presentation.viewModel.CreateTaskViewModel
-import com.example.tasks.src.features.notes.presentation.viewModel.CreateTaskViewModelFactory
+import com.example.tasks.src.features.notes.presentation.viewModel.factory.CreateTaskViewModelFactory
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,24 +43,22 @@ fun CreateTaskScreen(
     userId: String,
     onNavigateBack: () -> Unit = {}
 ) {
-
     val viewModel: CreateTaskViewModel = viewModel(
         factory = CreateTaskViewModelFactory(AppModule.createTaskUseCase)
     )
 
+    // States
     val title by viewModel.title.collectAsState()
     val description by viewModel.description.collectAsState()
     val selectedStatus by viewModel.selectedStatus.collectAsState()
     val success by viewModel.success.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-
     val isVisible by viewModel.isVisible.collectAsState()
     val titleExpanded by viewModel.titleExpanded.collectAsState()
     val descriptionExpanded by viewModel.descriptionExpanded.collectAsState()
     val showSuccess by viewModel.showSuccess.collectAsState()
 
     val options = TaskStatus.entries
-
     val statusColors = mapOf(
         TaskStatus.CANCELADA to Color(0xFFE57373),
         TaskStatus.EN_PROGRESO to Color(0xFF64B5F6),
@@ -89,15 +88,13 @@ fun CreateTaskScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-
+            // Header Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(220.dp),
                 shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                )
+                colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Image(
@@ -108,8 +105,6 @@ fun CreateTaskScreen(
                         contentDescription = "Sticky Notes Logo",
                         contentScale = ContentScale.Crop
                     )
-
-                    Box(modifier = Modifier.fillMaxSize())
 
                     Column(
                         modifier = Modifier
@@ -132,7 +127,6 @@ fun CreateTaskScreen(
                 }
             }
 
-
             AnimatedVisibility(
                 visible = isVisible,
                 enter = slideInVertically(
@@ -146,12 +140,10 @@ fun CreateTaskScreen(
                         .padding(24.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-
+                    // Title Card
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        ),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
                         elevation = CardDefaults.cardElevation(
                             defaultElevation = if (titleExpanded) 8.dp else 2.dp
                         )
@@ -166,13 +158,9 @@ fun CreateTaskScreen(
                             OutlinedTextField(
                                 value = title,
                                 onValueChange = { viewModel.onTitleChanged(it) },
-                                modifier = Modifier
-                                    .fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth(),
                                 placeholder = {
-                                    Text(
-                                        "Enter the title...",
-                                        color = Color(0xFFAAAAAA)
-                                    )
+                                    Text("Enter the title...", color = Color(0xFFAAAAAA))
                                 },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = Color(0xFF666666),
@@ -186,12 +174,10 @@ fun CreateTaskScreen(
                         }
                     }
 
-
+                    // Status Card
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        ),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
@@ -239,12 +225,21 @@ fun CreateTaskScreen(
                         }
                     }
 
-
+                    // Photos Card
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        ),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Box(modifier = Modifier.padding(20.dp)) {
+                            CameraScreenComponent()
+                        }
+                    }
+
+                    // Description Card
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
                         elevation = CardDefaults.cardElevation(
                             defaultElevation = if (descriptionExpanded) 8.dp else 2.dp
                         )
@@ -263,10 +258,7 @@ fun CreateTaskScreen(
                                     .fillMaxWidth()
                                     .height(120.dp),
                                 placeholder = {
-                                    Text(
-                                        "Describe your task...",
-                                        color = Color(0xFFAAAAAA)
-                                    )
+                                    Text("Describe your task...", color = Color(0xFFAAAAAA))
                                 },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = Color(0xFF666666),
@@ -280,7 +272,7 @@ fun CreateTaskScreen(
                         }
                     }
 
-
+                    // Save Button
                     Button(
                         onClick = {
                             viewModel.createTask(idUser = userId)
@@ -312,7 +304,7 @@ fun CreateTaskScreen(
             }
         }
 
-
+        // Success message
         AnimatedVisibility(
             visible = showSuccess,
             enter = scaleIn() + fadeIn(),
@@ -322,9 +314,7 @@ fun CreateTaskScreen(
                 .padding(16.dp)
         ) {
             Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF666666)
-                ),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF666666)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 shape = RoundedCornerShape(20.dp)
             ) {
@@ -335,10 +325,7 @@ fun CreateTaskScreen(
                     Box(
                         modifier = Modifier
                             .size(24.dp)
-                            .background(
-                                Color.White,
-                                CircleShape
-                            ),
+                            .background(Color.White, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -360,12 +347,10 @@ fun CreateTaskScreen(
         }
     }
 
-
     LaunchedEffect(showSuccess) {
         if (showSuccess) {
             delay(3000)
             viewModel.setShowSuccess(false)
         }
     }
-
 }
