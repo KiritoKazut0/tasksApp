@@ -1,0 +1,13 @@
+package com.example.tasks.src.features.notes.data.datasource.remote
+
+import com.example.tasks.src.features.notes.data.models.UploadFileDto
+import okhttp3.MultipartBody
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
+
+interface UploadFileService {
+    @Multipart
+    @POST("/upload/images")
+    suspend fun uploadImageFile(@Part file: MultipartBody.Part): UploadFileDto
+}

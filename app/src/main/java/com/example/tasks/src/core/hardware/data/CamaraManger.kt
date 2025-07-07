@@ -24,8 +24,11 @@ class CamaraManager(
     private val executor: Executor = ContextCompat.getMainExecutor(context)
     private var isInitialized = false
 
+    init {
+        initializeCamera()
+    }
 
-    fun initializeCamera() {
+    private fun initializeCamera() {
         if (!isInitialized) {
             try {
                 controller.setEnabledUseCases(
@@ -33,24 +36,24 @@ class CamaraManager(
                             LifecycleCameraController.IMAGE_ANALYSIS
                 )
 
-                // Asignar controlador al PreviewView
                 previewView.controller = controller
-
-                // Vincular al lifecycle
                 controller.bindToLifecycle(lifecycleOwner)
                 isInitialized = true
 
+                Log.d("CamaraManager", "Cámara inicializada correctamente")
             } catch (e: Exception) {
-                Log.e( "Error inicializando cámara: ${e.message}", e.toString())
+                Log.e("CamaraManager", "Error inicializando cámara: ${e.message}", e)
             }
         } else {
-            Log.d("Error: ","Cámara ya inicializada")
+            Log.d("CamaraManager", "Cámara ya inicializada")
         }
     }
 
     override fun capturePhoto(callback: (Uri?) -> Unit) {
         if (!isInitialized) {
-            initializeCamera()
+            Log.e("CamaraManager", "Cámara no inicializada")
+            callback(null)
+            return
         }
 
         try {
@@ -62,43 +65,55 @@ class CamaraManager(
             val file = File(internalDir, "IMG_${UUID.randomUUID()}.jpg")
             val output = ImageCapture.OutputFileOptions.Builder(file).build()
 
-
             controller.takePicture(
                 output,
                 executor,
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(result: ImageCapture.OutputFileResults) {
                         val uri = result.savedUri ?: Uri.fromFile(file)
+                        Log.d("CamaraManager", "Foto guardada: $uri")
                         callback(uri)
                     }
 
                     override fun onError(exception: ImageCaptureException) {
+                        Log.e("CamaraManager", "Error capturando foto: ${exception.message}", exception)
                         callback(null)
                     }
                 }
             )
         } catch (e: Exception) {
+            Log.e("CamaraManager", "Error en capturePhoto: ${e.message}", e)
             callback(null)
         }
     }
 
-    override fun getSavedPhoto(): List<File> {
+    override fun getSavedPhoto(): File? {
         val internalDir = File(context.filesDir, "camera_photos")
         return if (internalDir.exists()) {
-            internalDir.listFiles()?.toList() ?: emptyList()
+            internalDir.listFiles()?.firstOrNull()
         } else {
-            emptyList()
+            null
         }
     }
 
-   override fun cleanup() {
+
+    override fun cleanup() {
         if (isInitialized) {
             try {
                 previewView.controller = null
                 isInitialized = false
+                Log.d("CamaraManager", "Recursos de cámara limpiados")
             } catch (e: Exception) {
-                Log.e("Error limpiando recursos: ${e.message}", e.toString())
+                Log.e("CamaraManager", "Error limpiando recursos: ${e.message}", e)
             }
         }
+    }
+
+    // Método para reinicializar la cámara si es necesario
+    fun reinitializeCamera() {
+        if (isInitialized) {
+            cleanup()
+        }
+        initializeCamera()
     }
 }

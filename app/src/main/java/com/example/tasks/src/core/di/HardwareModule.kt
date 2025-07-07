@@ -3,8 +3,11 @@ package com.example.tasks.src.core.di
 import android.content.Context
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
+import com.example.tasks.src.core.appcontext.AppContextHolder
 import com.example.tasks.src.core.hardware.data.CamaraFactory
+import com.example.tasks.src.core.hardware.data.NotificationManagerImpl
 import com.example.tasks.src.core.hardware.domain.CamaraRepository
+import com.example.tasks.src.core.hardware.domain.NotificationRepository
 
 object HardwareModule {
    lateinit var cameraFactory : CamaraRepository
@@ -17,4 +20,8 @@ object HardwareModule {
       ){
          cameraFactory = CamaraFactory.create(contex, lifecycleOwner, previewView)
       }
+
+    val notificationManager: NotificationRepository by lazy {
+        NotificationManagerImpl(AppContextHolder.get())
+    }
 }

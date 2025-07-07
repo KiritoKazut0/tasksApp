@@ -1,6 +1,6 @@
 package com.example.tasks.src.features.notes.presentation.view
 
-
+import androidx.camera.view.PreviewView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -25,40 +25,90 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tasks.R
+import com.example.tasks.src.core.di.HardwareModule
 import com.example.tasks.src.features.notes.di.AppModule
 import com.example.tasks.src.features.notes.domain.models.TaskStatus
+import com.example.tasks.src.features.notes.presentation.view.comon.FullScreenError
+import com.example.tasks.src.features.notes.presentation.view.comon.FullScreenLoader
+import com.example.tasks.src.features.notes.presentation.viewModel.CameraViewModel
 import com.example.tasks.src.features.notes.presentation.viewModel.CreateTaskViewModel
+import com.example.tasks.src.features.notes.presentation.viewModel.factory.CameraViewModelFactory
 import com.example.tasks.src.features.notes.presentation.viewModel.factory.CreateTaskViewModelFactory
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun CreateTaskScreen(
     userId: String,
     onNavigateBack: () -> Unit = {}
 ) {
-    val viewModel: CreateTaskViewModel = viewModel(
-        factory = CreateTaskViewModelFactory(AppModule.createTaskUseCase)
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val previewView = remember { PreviewView(context) }
+
+    var cameraInitialized by remember { mutableStateOf(false) }
+    var cameraError by remember { mutableStateOf<String?>(null) }
+    var isVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        try {
+            HardwareModule.initCameraFactory(context, lifecycleOwner, previewView)
+            cameraInitialized = true
+            delay(300)
+            isVisible = true
+        } catch (e: Exception) {
+            cameraError = "Error al inicializar cámara: ${e.localizedMessage}"
+        }
+    }
+
+    when {
+        cameraError != null -> {
+            FullScreenError(message = cameraError!!) {
+                cameraError = null
+                cameraInitialized = false
+            }
+            return
+        }
+
+        !cameraInitialized -> {
+            FullScreenLoader()
+            return
+        }
+    }
+
+    // 2. ViewModels
+    val cameraViewModel: CameraViewModel = viewModel(
+        factory = CameraViewModelFactory(HardwareModule.cameraFactory)
     )
 
-    // States
-    val title by viewModel.title.collectAsState()
-    val description by viewModel.description.collectAsState()
-    val selectedStatus by viewModel.selectedStatus.collectAsState()
-    val success by viewModel.success.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val isVisible by viewModel.isVisible.collectAsState()
-    val titleExpanded by viewModel.titleExpanded.collectAsState()
-    val descriptionExpanded by viewModel.descriptionExpanded.collectAsState()
-    val showSuccess by viewModel.showSuccess.collectAsState()
+    val viewModelTask: CreateTaskViewModel = viewModel(
+        factory = CreateTaskViewModelFactory(
+            AppModule.createTaskUseCase,
+            HardwareModule.notificationManager,
+            AppModule.uploadFileUseCase
+
+        )
+    )
+
+    // Estados de UI
+    val title by viewModelTask.title.collectAsState()
+    val description by viewModelTask.description.collectAsState()
+    val selectedStatus by viewModelTask.selectedStatus.collectAsState()
+    val isLoading by viewModelTask.isLoading.collectAsState()
+    val showSuccess by viewModelTask.showSuccess.collectAsState()
+    val errorMessage by viewModelTask.errorMessage.collectAsState()
 
     val options = TaskStatus.entries
+
     val statusColors = mapOf(
         TaskStatus.CANCELADA to Color(0xFFE57373),
         TaskStatus.EN_PROGRESO to Color(0xFF64B5F6),
@@ -66,18 +116,7 @@ fun CreateTaskScreen(
         TaskStatus.PENDIENTE to Color(0xFFBDBDBD)
     )
 
-    LaunchedEffect(Unit) {
-        delay(300)
-        viewModel.setVisible(true)
-    }
-
-    LaunchedEffect(success) {
-        if (success) {
-            delay(3000)
-            onNavigateBack()
-        }
-    }
-
+    // UI Principal
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -94,7 +133,9 @@ fun CreateTaskScreen(
                     .fillMaxWidth()
                     .height(220.dp),
                 shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                )
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Image(
@@ -105,6 +146,8 @@ fun CreateTaskScreen(
                         contentDescription = "Sticky Notes Logo",
                         contentScale = ContentScale.Crop
                     )
+
+                    Box(modifier = Modifier.fillMaxSize())
 
                     Column(
                         modifier = Modifier
@@ -127,6 +170,7 @@ fun CreateTaskScreen(
                 }
             }
 
+            // Contenido principal con animación
             AnimatedVisibility(
                 visible = isVisible,
                 enter = slideInVertically(
@@ -140,13 +184,13 @@ fun CreateTaskScreen(
                         .padding(24.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    // Title Card
+                    // Sección de título
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = if (titleExpanded) 8.dp else 2.dp
-                        )
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
                             Text(
@@ -157,10 +201,13 @@ fun CreateTaskScreen(
                             )
                             OutlinedTextField(
                                 value = title,
-                                onValueChange = { viewModel.onTitleChanged(it) },
+                                onValueChange = viewModelTask::onTitleChanged,
                                 modifier = Modifier.fillMaxWidth(),
                                 placeholder = {
-                                    Text("Enter the title...", color = Color(0xFFAAAAAA))
+                                    Text(
+                                        "Enter the title...",
+                                        color = Color(0xFFAAAAAA)
+                                    )
                                 },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = Color(0xFF666666),
@@ -174,10 +221,12 @@ fun CreateTaskScreen(
                         }
                     }
 
-                    // Status Card
+                    // Sección de estado
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
@@ -197,7 +246,7 @@ fun CreateTaskScreen(
                                     val isSelected = selectedStatus == option
 
                                     FilterChip(
-                                        onClick = { viewModel.onStatusSelected(option) },
+                                        onClick = { viewModelTask.onStatusSelected(option) },
                                         label = {
                                             Text(
                                                 option.name,
@@ -225,24 +274,35 @@ fun CreateTaskScreen(
                         }
                     }
 
-                    // Photos Card
+                    // Sección de cámara
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
-                        Box(modifier = Modifier.padding(20.dp)) {
-                            CameraScreenComponent()
+                        Column(modifier = Modifier.padding(20.dp)) {
+                            Text(
+                                text = "Photos",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = Color(0xFF666666),
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                            CameraScreenComponent(
+                                cameraViewModel = cameraViewModel,
+                                previewView = previewView
+                            )
                         }
                     }
 
-                    // Description Card
+                    // Sección de descripción
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = if (descriptionExpanded) 8.dp else 2.dp
-                        )
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
                             Text(
@@ -253,12 +313,15 @@ fun CreateTaskScreen(
                             )
                             OutlinedTextField(
                                 value = description,
-                                onValueChange = { viewModel.onDescriptionChanged(it) },
+                                onValueChange = viewModelTask::onDescriptionChanged,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(120.dp),
                                 placeholder = {
-                                    Text("Describe your task...", color = Color(0xFFAAAAAA))
+                                    Text(
+                                        "Describe your task...",
+                                        color = Color(0xFFAAAAAA)
+                                    )
                                 },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = Color(0xFF666666),
@@ -272,10 +335,11 @@ fun CreateTaskScreen(
                         }
                     }
 
-                    // Save Button
+                    // Botón de guardar
                     Button(
                         onClick = {
-                            viewModel.createTask(idUser = userId)
+                            val images = cameraViewModel.getPhoto()
+                            viewModelTask.createTask(userId, images)
                         },
                         enabled = !isLoading && title.isNotBlank(),
                         modifier = Modifier
@@ -300,11 +364,29 @@ fun CreateTaskScreen(
                             )
                         }
                     }
+
+                    // Mostrar errores
+                    errorMessage?.let { message ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFFFFEBEE)
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Text(
+                                text = message,
+                                color = Color(0xFFD32F2F),
+                                modifier = Modifier.padding(16.dp),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
                 }
             }
         }
 
-        // Success message
+        // Mensaje de éxito animado
         AnimatedVisibility(
             visible = showSuccess,
             enter = scaleIn() + fadeIn(),
@@ -314,7 +396,9 @@ fun CreateTaskScreen(
                 .padding(16.dp)
         ) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF666666)),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF666666)
+                ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 shape = RoundedCornerShape(20.dp)
             ) {
@@ -325,7 +409,10 @@ fun CreateTaskScreen(
                     Box(
                         modifier = Modifier
                             .size(24.dp)
-                            .background(Color.White, CircleShape),
+                            .background(
+                                Color.White,
+                                CircleShape
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -337,7 +424,7 @@ fun CreateTaskScreen(
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "¡Tarea guardada exitosamente!",
+                        text = "¡Tarea creada exitosamente!",
                         color = Color.White,
                         fontWeight = FontWeight.Medium,
                         style = MaterialTheme.typography.bodyLarge
@@ -347,10 +434,13 @@ fun CreateTaskScreen(
         }
     }
 
+    // Manejo del mensaje de éxito
     LaunchedEffect(showSuccess) {
         if (showSuccess) {
             delay(3000)
-            viewModel.setShowSuccess(false)
+            viewModelTask.clearSuccess()
+            onNavigateBack()
         }
     }
 }
+
