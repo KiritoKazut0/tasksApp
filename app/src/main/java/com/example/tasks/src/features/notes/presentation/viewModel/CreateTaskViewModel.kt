@@ -40,6 +40,7 @@ class CreateTaskViewModel(
     val showSuccess: StateFlow<Boolean> = _showSuccess
 
     // Estados adicionales para coincidir con UpdateTaskViewModel
+
     private val _isVisible = MutableStateFlow(false)
     val isVisible: StateFlow<Boolean> = _isVisible
 
@@ -97,15 +98,18 @@ class CreateTaskViewModel(
 
         viewModelScope.launch {
             try {
-                val urlImage = uploadFileUseCase(image).getOrThrow()
+                val imageIsPublic = true;
+                val urlImage = uploadFileUseCase(image, imageIsPublic).getOrThrow()
                 Log.d("Image", urlImage.url)
                 val task = CreateTask(
                     user_id = userId,
                     titulo = _title.value,
                     descripcion = _description.value,
                     status = _selectedStatus.value,
-                    // url = urlImage // habilítalo si ya tienes soporte
+                    image = urlImage.url
                 )
+
+
 
                 val result = createTaskUseCase(task).getOrThrow()
                 notificationRepository.activeNotification(result.id, result.titulo)

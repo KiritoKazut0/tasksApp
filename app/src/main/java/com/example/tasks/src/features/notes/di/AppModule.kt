@@ -21,7 +21,7 @@ object AppModule {
     }
 
     private val uploadFileService: UploadFileService by lazy {
-        RetrofitHelper.getService(uploadFileService::class.java)
+        RetrofitHelper.getService(UploadFileService::class.java)
     }
 
     private val taskRepository: TaskRepository by lazy {

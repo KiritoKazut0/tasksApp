@@ -6,14 +6,16 @@ data class TaskDto (
     val id: String,
     val titulo: String,
     val descripcion: String,
-    val status: TaskStatusDto
+    val status: TaskStatusDto,
+    val image: String
 ) {
 
     fun toDomain() = Task(
         id = id,
         titulo = titulo,
         descripcion = descripcion,
-        status = status.toDomain()
+        status = status.toDomain(),
+        image = image
     )
 
 

@@ -6,15 +6,20 @@ import com.example.tasks.src.features.notes.domain.repository.UploadFileReposito
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class UploadFileRepositoryImpl( private  val api: UploadFileService): UploadFileRepository {
 
-    override suspend fun uploadImage(file: File): Result<UploadFile> {
+    override suspend fun uploadImage(file: File, isPublic: Boolean): Result<UploadFile> {
         return try {
             val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
             val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
-            val response = api.uploadImageFile(body)
+
+            val isPublicBody = isPublic.toString()
+                .toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val response = api.uploadImageFile(body, isPublicBody)
             Result.success(response.toDomain())
 
         } catch (e: Exception){

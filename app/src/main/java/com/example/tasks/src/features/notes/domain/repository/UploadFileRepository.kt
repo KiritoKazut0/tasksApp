@@ -5,5 +5,5 @@ import java.io.File
 
 
 interface UploadFileRepository {
-    suspend fun uploadImage(file: File): Result<UploadFile>
+    suspend fun uploadImage(file: File, isPublic: Boolean): Result<UploadFile>
 }

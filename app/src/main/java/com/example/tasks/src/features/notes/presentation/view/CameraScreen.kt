@@ -40,7 +40,6 @@ fun CameraScreenComponent(
     previewView: PreviewView,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     val scope = rememberCoroutineScope()
 

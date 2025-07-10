@@ -5,8 +5,8 @@ import com.example.tasks.src.features.notes.domain.repository.UploadFileReposito
 import java.io.File
 
 class UploadFileUseCase (private val repository: UploadFileRepository){
-    suspend operator fun invoke(file: File): Result<UploadFile>{
-        return repository.uploadImage(file)
+    suspend operator fun invoke(file: File, isPublic: Boolean): Result<UploadFile>{
+        return repository.uploadImage(file, isPublic)
     }
 
 }

@@ -5,12 +5,15 @@ data class CreateTask(
     val user_id: String,
     val titulo: String,
     val descripcion: String,
-    val status: TaskStatus
+    val status: TaskStatus,
+    val image: String
 ) {
     fun toDo() = CreateTaskDto(
         user_id = user_id,
         titulo = titulo,
         descripcion = descripcion,
-        status = status.toDo()
+        status = status.toDo(),
+        image = image
+
     )
 }

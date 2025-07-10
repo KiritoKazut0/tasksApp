@@ -39,7 +39,8 @@ class NotificationManagerImpl(
                 .setContentText("Tarea: $taskTitle. No olvides completarla antes de la fecha límite.")
                 .setSmallIcon(R.drawable.outline_notification_add_24)
                 .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVibrate(longArrayOf(0, 250, 250, 250))
                 .build()
 
             notificationManager.notify(idTask.hashCode(), notification)
@@ -71,10 +72,11 @@ class NotificationManagerImpl(
             val channel = NotificationChannel(
                 Constants.NOTIFICATION_CHANNEL_ID,
                 "Tareas",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "Canal para notificaciones de tareas"
                 enableVibration(true)
+                vibrationPattern = longArrayOf(0, 250, 250, 250)
 
                 val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
                 val audioAttributes = AudioAttributes.Builder()
