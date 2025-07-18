@@ -1,10 +1,14 @@
 package com.example.tasks.src.features.notes.di
 
+import com.example.tasks.src.core.di.NetworkModule
+import com.example.tasks.src.core.di.RoomModule
 import com.example.tasks.src.core.network.http.RetrofitHelper
 import com.example.tasks.src.features.notes.data.datasource.remote.TaskService
 import com.example.tasks.src.features.notes.data.datasource.remote.UploadFileService
+import com.example.tasks.src.features.notes.data.repository.TaskLocalRepositoryImpl
 import com.example.tasks.src.features.notes.data.repository.TaskRepositoryImpl
 import com.example.tasks.src.features.notes.data.repository.UploadFileRepositoryImpl
+import com.example.tasks.src.features.notes.data.repository.UploadLocalFileRepositoryImpl
 import com.example.tasks.src.features.notes.domain.repository.TaskRepository
 import com.example.tasks.src.features.notes.domain.repository.UploadFileRepository
 import com.example.tasks.src.features.notes.domain.usecase.CreateTaskUseCase
@@ -15,6 +19,7 @@ import com.example.tasks.src.features.notes.domain.usecase.UploadFileUseCase
 
 object AppModule {
 
+   private val networkManager = NetworkModule.networkManager
 
     private val taskService: TaskService by lazy {
         RetrofitHelper.getService(TaskService::class.java)
@@ -24,29 +29,38 @@ object AppModule {
         RetrofitHelper.getService(UploadFileService::class.java)
     }
 
-    private val taskRepository: TaskRepository by lazy {
+    private val remoteTaskRepository: TaskRepository by lazy {
         TaskRepositoryImpl(taskService)
     }
 
-    private val uploadFileRepository: UploadFileRepository by lazy {
+    private val localTaskRepository: TaskRepository by lazy {
+        val dao = RoomModule.getTaskDao()
+        TaskLocalRepositoryImpl(dao)
+    }
+
+    private val remoteUploadFileRepository: UploadFileRepository by lazy {
         UploadFileRepositoryImpl(uploadFileService)
     }
 
+    private val localUploadFileRepository: UploadFileRepository by lazy {
+        UploadLocalFileRepositoryImpl()
+    }
 
     val uploadFileUseCase: UploadFileUseCase by lazy {
-        UploadFileUseCase(uploadFileRepository)
+        UploadFileUseCase(remoteUploadFileRepository, localUploadFileRepository, networkManager)
     }
 
     val createTaskUseCase: CreateTaskUseCase by lazy {
-        CreateTaskUseCase(taskRepository)
+        CreateTaskUseCase(remoteTaskRepository, localTaskRepository, networkManager)
     }
+
     val listTaskUseCase: ListTaskUseCase by lazy {
-        ListTaskUseCase(taskRepository)
+        ListTaskUseCase(remoteTaskRepository, localTaskRepository, networkManager)
     }
     val updateTaskUseCase: UpdateTaskUseCase by lazy {
-        UpdateTaskUseCase(taskRepository)
+        UpdateTaskUseCase(remoteTaskRepository, localTaskRepository, networkManager)
     }
     val deleteTaskUseCase: DeleteTaskUseCase by lazy {
-        DeleteTaskUseCase(taskRepository)
+        DeleteTaskUseCase(remoteTaskRepository, localTaskRepository, networkManager)
     }
 }

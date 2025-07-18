@@ -109,7 +109,6 @@ class CamaraManager(
         }
     }
 
-    // Método para reinicializar la cámara si es necesario
     fun reinitializeCamera() {
         if (isInitialized) {
             cleanup()

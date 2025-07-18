@@ -23,6 +23,7 @@ object AppModule{
             appContext = context.applicationContext
             dataStoreManager = DataStoreManager(appContext)
             RetrofitHelper.init(dataStoreManager)
+
             isInitialized = true
         }
     }

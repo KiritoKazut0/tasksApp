@@ -17,7 +17,6 @@ class TokenCaptureInterceptor(
         val response = chain.proceed(request)
 
         val authHeader = response.header("Authorization")
-
         if (!authHeader.isNullOrEmpty()) {
             // Guardar el token en DataStore de forma segura
             CoroutineScope(Dispatchers.IO).launch {

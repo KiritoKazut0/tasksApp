@@ -11,6 +11,7 @@ import com.example.tasks.src.core.hardware.domain.NotificationRepository
 
 object HardwareModule {
    lateinit var cameraFactory : CamaraRepository
+
       private set
 
        fun initCameraFactory(
