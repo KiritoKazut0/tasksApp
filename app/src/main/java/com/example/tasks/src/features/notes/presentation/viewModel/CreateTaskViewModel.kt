@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tasks.src.core.hardware.domain.NotificationRepository
+import com.example.tasks.src.core.hardware.domain.VibratorRepository
 import com.example.tasks.src.features.notes.domain.models.CreateTask
 import com.example.tasks.src.features.notes.domain.models.TaskStatus
 import com.example.tasks.src.features.notes.domain.usecase.CreateTaskUseCase
@@ -16,7 +17,8 @@ import java.io.File
 class CreateTaskViewModel(
     private val createTaskUseCase: CreateTaskUseCase,
     private val notificationRepository: NotificationRepository,
-    private val uploadFileUseCase: UploadFileUseCase
+    private val uploadFileUseCase: UploadFileUseCase,
+    private val vibratorRepository: VibratorRepository
 ) : ViewModel() {
 
     // Estados del formulario
@@ -112,6 +114,7 @@ class CreateTaskViewModel(
 
 
                 val result = createTaskUseCase(task).getOrThrow()
+                vibratorRepository.vibrate(500)
                 notificationRepository.activeNotification(result.id, result.titulo)
 
                 _showSuccess.value = true

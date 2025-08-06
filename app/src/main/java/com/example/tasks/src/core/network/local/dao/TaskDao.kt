@@ -10,6 +10,9 @@ import com.example.tasks.src.core.network.local.entities.TaskEntity
 @Dao
 interface TaskDao {
 
+//    @Query("SELECT * FROM tasks WHERE isSynced = 0")
+//    suspend fun getPendingTasks(): List<TaskEntity>
+
     @Query("SELECT * FROM tasks WHERE id_user = :idUser")
     suspend fun listTask(idUser: String): List<TaskEntity>
 
@@ -29,6 +32,6 @@ interface TaskDao {
     @Query("DELETE FROM tasks")
     suspend fun deleteAll()
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun InsertAllTask()
+
+
 }

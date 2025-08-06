@@ -8,6 +8,7 @@ import com.example.tasks.src.features.notes.domain.models.Task
 import com.example.tasks.src.features.notes.domain.models.UpdateTask
 import com.example.tasks.src.features.notes.domain.models.toDo
 import com.example.tasks.src.features.notes.domain.repository.TaskRepository
+import com.example.tasks.src.features.notes.domain.repository.TaskSyncRepository
 
 class TaskLocalRepositoryImpl (
     private val taskDao: TaskDao
@@ -60,6 +61,23 @@ class TaskLocalRepositoryImpl (
         }
     }
 
+
+//    override suspend fun getPending(): Result<List<Task>> {
+//        return  try {
+//            val tasks = taskDao.getPendingTasks()
+//            Result.success(tasks.map { it.toDomain() })
+//        } catch (e: Exception){
+//            Result.failure(e)
+//        }
+//    }
+//
+//
+//    override suspend fun markTaskAsSynced(id: String) {
+//        val task = taskDao.getTaskById(id)
+//        task?.let {
+//            taskDao.update(it.copy(isSynced = true))
+//        }
+//    }
 
 
 }

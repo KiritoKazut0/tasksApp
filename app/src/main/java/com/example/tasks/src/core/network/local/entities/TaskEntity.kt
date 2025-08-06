@@ -21,6 +21,7 @@ data class TaskEntity(
     @ColumnInfo(name = "descripcion") val descripcion: String,
     @ColumnInfo(name = "status") val status: TaskStatusDto,
     @ColumnInfo(name = "image") val image: String,
+//    @ColumnInfo(name = "isSynced") val isSynced: Boolean = false
 )
 
 

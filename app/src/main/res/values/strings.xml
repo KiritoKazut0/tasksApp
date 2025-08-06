@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Tasks</string>
+    <string name="msg_token_fmt">FCM Token: %s</string>
+    <string name="msg_token_failed">Fetching FCM token failed</string>
+    <string name="msg_token_success">Token fetched successfully</string>
+    <string name="msg_notification_received">New notification received</string>
 </resources>

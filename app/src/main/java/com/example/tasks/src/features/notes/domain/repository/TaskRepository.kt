@@ -10,3 +10,8 @@ interface TaskRepository {
     suspend fun update(id: String ,request: UpdateTask): Result<Task>
     suspend fun delete(id: String): Result<String>
 }
+
+interface TaskSyncRepository {
+    suspend fun getPending(): Result<List<Task>>
+    suspend fun markTaskAsSynced(id: String)
+}

@@ -6,8 +6,11 @@ import androidx.lifecycle.LifecycleOwner
 import com.example.tasks.src.core.appcontext.AppContextHolder
 import com.example.tasks.src.core.hardware.data.CamaraFactory
 import com.example.tasks.src.core.hardware.data.NotificationManagerImpl
+import com.example.tasks.src.core.hardware.data.VibratorRepositoryImpl
 import com.example.tasks.src.core.hardware.domain.CamaraRepository
 import com.example.tasks.src.core.hardware.domain.NotificationRepository
+import com.example.tasks.src.core.hardware.domain.VibratorRepository
+import kotlin.text.get
 
 object HardwareModule {
    lateinit var cameraFactory : CamaraRepository
@@ -25,4 +28,9 @@ object HardwareModule {
     val notificationManager: NotificationRepository by lazy {
         NotificationManagerImpl(AppContextHolder.get())
     }
+
+    val vibratorManager: VibratorRepository by lazy {
+        VibratorRepositoryImpl(AppContextHolder.get())
+    }
+
 }
